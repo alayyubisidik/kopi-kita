@@ -18,8 +18,10 @@
         "spatie/laravel-medialibrary": "^11.23"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "*",
         "fakerphp/faker": "^1.23",
-        "laravel/pail": "^1.2.5",
+        "laravel/breeze": "^2.4",
+        "laravel/pail": "^1.2",
         "laravel/pao": "^1.0.6",
         "laravel/pint": "^1.27",
         "mockery/mockery": "^1.6",

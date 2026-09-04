@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Setup Key
+    |--------------------------------------------------------------------------
+    |
+    | This key is used for first-time admin setup. A 32-character random string
+    | must be entered during the initial admin creation process.
+    |
+    */
+
+    'admin_setup_key' => env('ADMIN_SETUP_KEY'),
+
 ];

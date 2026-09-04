@@ -8,57 +8,124 @@ Dokumen ini dibuat sebagai panduan implementasi **step-by-step** dari PRD Kopi K
 
 ## 1.1 Initialize Laravel
 
-* [ ] Buat project Laravel 13.
-* [ ] Konfigurasi PHP 8.4+.
+* [x] Buat project Laravel 13.
+* [x] Konfigurasi PHP 8.4+.
 * [ ] Konfigurasi MySQL 8.
-* [ ] Konfigurasi `.env`.
-* [ ] Konfigurasi `APP_NAME=Kopi Kita`.
-* [ ] Konfigurasi `APP_URL`.
-* [ ] Konfigurasi database.
-* [ ] Konfigurasi timezone `Asia/Jakarta`.
+* [x] Konfigurasi `.env`.
+* [x] Konfigurasi `APP_NAME=Kopi Kita`.
+* [x] Konfigurasi `APP_URL`.
+* [x] Konfigurasi database.
+* [x] Konfigurasi timezone `Asia/Jakarta`.
 
 ## 1.2 Frontend Setup
 
-* [ ] Install dan konfigurasi Tailwind CSS 4.
-* [ ] Konfigurasi Blade.
-* [ ] Konfigurasi Alpine.js.
-* [ ] Setup layout utama customer.
-* [ ] Setup layout dashboard Admin.
+* [x] Install dan konfigurasi Tailwind CSS 4.
+* [x] Konfigurasi Blade.
+* [x] Konfigurasi Alpine.js.
+* [x] Setup layout utama customer.
+* [x] Setup layout dashboard Admin.
 
 ## 1.3 Development Tools
 
-* [ ] Install Laravel Debugbar.
-* [ ] Install Laravel Pail.
-* [ ] Install Laravel Pint.
-* [ ] Pastikan testing environment berjalan.
+* [x] Install Laravel Debugbar.
+* [x] Install Laravel Pail.
+* [x] Install Laravel Pint.
+* [x] Pastikan testing environment berjalan.
 
 ## 1.4 Initial Git
 
-* [ ] Initialize repository.
-* [ ] Buat `.gitignore`.
-* [ ] Buat initial commit setelah project berhasil dijalankan.
-* [ ] Jangan commit/push perubahan berikutnya sebelum dilakukan review.
+* [x] Initialize repository.
+* [x] Buat `.gitignore`.
+* [x] Buat initial commit setelah project berhasil dijalankan.
+* [x] Jangan commit/push perubahan berikutnya sebelum dilakukan review.
 
 ---
 
-# Phase 2 — Authentication & Admin Setup
+# Phase 2 — Authentication & Initial Admin Setup
 
-## 2.1 Admin Authentication
+## 2.1 Authentication
 
-* [ ] Install Laravel Breeze.
-* [ ] Implement login Admin.
-* [ ] Implement logout.
-* [ ] Buat middleware authentication.
-* [ ] Proteksi seluruh route dashboard.
+* [ ] Install dan konfigurasi Laravel Breeze.
+* [ ] Gunakan fitur **Login** dari Laravel Breeze.
+* [ ] Gunakan fitur **Logout** dari Laravel Breeze.
+* [ ] Hapus seluruh fitur **Register** bawaan Laravel Breeze.
+* [ ] Hapus route `/register`.
+* [ ] Hapus controller, request, view, dan logic registration yang tidak digunakan.
+* [ ] Buat middleware authentication untuk user yang sudah login.
+* [ ] Proteksi seluruh route dashboard menggunakan middleware `auth`.
+* [ ] Pastikan customer dapat mengakses halaman customer tanpa login.
 
-## 2.2 Admin User
+## 2.2 User
 
-* [ ] Buat migration `users`.
-* [ ] Buat Admin seeder.
-* [ ] Buat mekanisme initial admin setup.
-* [ ] Pastikan customer tidak membutuhkan authentication.
+* [ ] Gunakan tabel `users` standar Laravel.
+* [ ] Tidak menggunakan Spatie Permission.
+* [ ] Tidak menggunakan role pada sistem.
+* [ ] Tidak menambahkan kolom `role` pada tabel `users`.
+* [ ] Tidak membuat Admin Seeder.
+* [ ] Tidak membuat user/admin melalui seeder.
+* [ ] User pertama yang dibuat melalui `/setup-admin` dianggap sebagai admin sistem.
+* [ ] Tidak menyediakan public registration.
 
-> Catatan: sistem hanya memiliki satu role internal (Admin), sehingga tidak dibutuhkan package role/permission. Proteksi dashboard cukup menggunakan middleware `auth` bawaan Laravel.
+## 2.3 Initial Admin Setup
+
+* [ ] Buat route `GET /setup-admin`.
+* [ ] Buat halaman **Setup Admin**.
+* [ ] Tampilan dan field Setup Admin dibuat seperti halaman Register Breeze.
+* [ ] Form Setup Admin memiliki:
+
+  * [ ] Name
+  * [ ] Email
+  * [ ] Password
+  * [ ] Password Confirmation
+  * [ ] Setup Key
+* [ ] Buat Setup Key berupa string acak sepanjang **32 karakter**.
+* [ ] Simpan Setup Key pada `.env`.
+* [ ] Expose Setup Key melalui file configuration, misalnya `config/app.php`.
+* [ ] Controller tidak membaca `env()` secara langsung.
+* [ ] Validasi seluruh input Setup Admin.
+* [ ] Validasi Setup Key dengan value yang tersimpan di configuration.
+* [ ] Jika valid, buat user pertama pada tabel `users`.
+* [ ] Setelah user berhasil dibuat, redirect ke halaman login.
+
+## 2.4 Initial Setup Redirect
+
+* [ ] Buat mekanisme untuk mengecek apakah tabel `users` masih kosong.
+* [ ] Jika **belum ada user sama sekali**, aplikasi harus mengarahkan user ke `/setup-admin`.
+* [ ] Berlaku ketika aplikasi pertama kali dijalankan dengan database kosong.
+* [ ] Jika sudah terdapat minimal satu user, `/setup-admin` tidak boleh digunakan lagi.
+* [ ] Jika `/setup-admin` diakses setelah user pertama sudah dibuat, redirect ke halaman login.
+* [ ] Jika user sudah login lalu mencoba mengakses `/setup-admin`, redirect ke dashboard.
+* [ ] Pastikan Setup Admin hanya dapat dilakukan **satu kali**.
+
+## 2.5 Setup Key
+
+* [ ] Tambahkan konfigurasi environment:
+
+```env
+ADMIN_SETUP_KEY=32_CHARACTER_RANDOM_STRING
+```
+
+* [ ] Tambahkan konfigurasi pada file config, misalnya:
+
+```php
+'admin_setup_key' => env('ADMIN_SETUP_KEY'),
+```
+
+* [ ] Gunakan `config('app.admin_setup_key')` ketika melakukan validasi.
+* [ ] Jangan hardcode Setup Key di source code.
+* [ ] Jangan menyimpan Setup Key ke database.
+* [ ] Jangan menampilkan Setup Key ke frontend.
+* [ ] Jangan commit `.env` ke repository.
+
+## 2.6 Security & Access Rules
+
+| Kondisi                          | `/setup-admin`        |
+| -------------------------------- | --------------------- |
+| Belum ada user                   | Bisa diakses          |
+| Belum ada user + Setup Key salah | Ditolak               |
+| Belum ada user + Setup Key benar | Admin dibuat          |
+| Sudah ada user + belum login     | Redirect ke login     |
+| Sudah ada user + sudah login     | Redirect ke dashboard |
 
 ---
 
