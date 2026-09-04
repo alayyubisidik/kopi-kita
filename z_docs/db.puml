@@ -1,0 +1,207 @@
+@startuml Kopi Kita - Database ERD
+
+!define TABLE(name) class name << (T,#89d1e0) >>
+!define PK(x) <b><color:#b8860b><&key></color> x</b>
+!define FK(x) <color:#0000FF><&link-intact></color> x
+
+hide circle
+skinparam linetype ortho
+skinparam roundcorner 8
+skinparam class {
+    BackgroundColor #FEFEFE
+    BorderColor #444444
+    ArrowColor #444444
+}
+
+' =========================================
+' USERS & AUTH (Admin only)
+' =========================================
+TABLE(users) {
+    PK(id) : bigint unsigned
+    --
+    name : varchar(255)
+    email : varchar(255) <<unique>>
+    email_verified_at : timestamp
+    password : varchar(255)
+    remember_token : varchar(100)
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+' Catatan: hanya satu role internal (Admin), tidak ada tabel role/permission terpisah.
+
+' =========================================
+' CATALOG
+' =========================================
+TABLE(categories) {
+    PK(id) : bigint unsigned
+    --
+    name : varchar(255)
+    slug : varchar(255) <<unique>>
+    description : text
+    is_active : boolean
+    sort_order : integer
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+TABLE(products) {
+    PK(id) : bigint unsigned
+    --
+    FK(category_id) : bigint unsigned
+    name : varchar(255)
+    slug : varchar(255) <<unique>>
+    description : text
+    price : decimal(12,2)
+    is_available : boolean
+    is_customizable : boolean
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+TABLE(media) {
+    PK(id) : bigint unsigned
+    --
+    model_type : varchar(255)
+    FK(model_id) : bigint unsigned
+    collection_name : varchar(255)
+    file_name : varchar(255)
+    disk : varchar(255)
+    size : bigint
+}
+
+' =========================================
+' CUSTOMIZATION
+' =========================================
+TABLE(option_groups) {
+    PK(id) : bigint unsigned
+    --
+    name : varchar(255)
+    description : text
+    selection_type : enum(single,multiple)
+    min_selection : integer
+    max_selection : integer
+    is_active : boolean
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+TABLE(options) {
+    PK(id) : bigint unsigned
+    --
+    FK(option_group_id) : bigint unsigned
+    name : varchar(255)
+    additional_price : decimal(12,2)
+    is_available : boolean
+    sort_order : integer
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+TABLE(product_option_groups) {
+    PK(id) : bigint unsigned
+    --
+    FK(product_id) : bigint unsigned
+    FK(option_group_id) : bigint unsigned
+    sort_order : integer
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+' =========================================
+' ORDERS & PAYMENTS
+' =========================================
+TABLE(orders) {
+    PK(id) : bigint unsigned
+    --
+    order_code : varchar(20) <<unique>>
+    customer_name : varchar(255)
+    order_type : enum(online,offline)
+    status : enum(processing,ready,completed)
+    note : text
+    subtotal : decimal(12,2)
+    total : decimal(12,2)
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+TABLE(order_items) {
+    PK(id) : bigint unsigned
+    --
+    FK(order_id) : bigint unsigned
+    FK(product_id) : bigint unsigned <<nullable>>
+    product_name : varchar(255)
+    product_price : decimal(12,2)
+    quantity : integer
+    note : varchar(100)
+    item_subtotal : decimal(12,2)
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+TABLE(order_item_options) {
+    PK(id) : bigint unsigned
+    --
+    FK(order_item_id) : bigint unsigned
+    FK(option_id) : bigint unsigned <<nullable>>
+    option_group_name : varchar(255)
+    option_name : varchar(255)
+    additional_price : decimal(12,2)
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+TABLE(payments) {
+    PK(id) : bigint unsigned
+    --
+    FK(order_id) : bigint unsigned
+    payment_method : enum(midtrans,cash,qris)
+    payment_status : enum(pending,success,failed,expired)
+    amount : decimal(12,2)
+    midtrans_order_id : varchar(100) <<unique>>
+    midtrans_transaction_id : varchar(100)
+    midtrans_payment_type : varchar(50)
+    paid_at : timestamp
+    raw_response : json
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+' =========================================
+' ACTIVITY LOG
+' =========================================
+TABLE(activity_log) {
+    PK(id) : bigint unsigned
+    --
+    log_name : varchar(255)
+    description : text
+    subject_type : varchar(255)
+    FK(subject_id) : bigint unsigned
+    causer_type : varchar(255)
+    FK(causer_id) : bigint unsigned
+    properties : json
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+' =========================================
+' RELATIONSHIPS
+' =========================================
+categories ||--o{ products : "has many"
+products ||--o{ media : "has images"
+
+products }o--o{ product_option_groups
+option_groups }o--o{ product_option_groups
+
+option_groups ||--o{ options : "has many"
+
+orders ||--o{ order_items : "has many"
+order_items ||--o{ order_item_options : "has many"
+orders ||--|| payments : "has one"
+
+products ..> order_items : "snapshot ref"
+options ..> order_item_options : "snapshot ref"
+
+users ..> activity_log : "causer"
+
+@enduml
