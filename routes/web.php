@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\OptionGroupController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SetupAdminController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,9 @@ Route::middleware('auth')
             ->except(['show']);
 
         Route::resource('options', OptionController::class)
+            ->except(['show']);
+
+        Route::resource('products', ProductController::class)
             ->except(['show']);
     });
 

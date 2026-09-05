@@ -2,37 +2,32 @@
 
 namespace App\Services;
 
+use function Flasher\Notyf\Prime\notyf;
+
 class AlertService
 {
-    public static function created(string $message): void
+    public static function updated($message = null)
     {
-        session()->flash('alert', [
-            'type' => 'success',
-            'message' => $message,
-        ]);
+        notyf()->success($message ? $message : 'Updated Successfully');
     }
 
-    public static function updated(string $message): void
+    public static function created($message = null)
     {
-        session()->flash('alert', [
-            'type' => 'success',
-            'message' => $message,
-        ]);
+        notyf()->success($message ? $message : 'Created Successfully');
     }
 
-    public static function deleted(string $message): void
+    public static function deleted($message = null)
     {
-        session()->flash('alert', [
-            'type' => 'success',
-            'message' => $message,
-        ]);
+        notyf()->success($message ? $message : 'Deleted Successfully');
     }
 
-    public static function error(string $message): void
+    public static function error($message = null)
     {
-        session()->flash('alert', [
-            'type' => 'error',
-            'message' => $message,
-        ]);
+        notyf()->error($message ? $message : 'Something went wrong');
+    }
+
+    public static function success($message = null)
+    {
+        notyf()->success($message ? $message : 'Operation completed successfully');
     }
 }

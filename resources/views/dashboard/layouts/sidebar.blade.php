@@ -36,26 +36,13 @@
             Options
         </a>
 
-        {{-- <a href="{{ route('admin.products.index') }}" class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 rounded {{ request()->routeIs('admin.products.*') ? 'bg-gray-700' : '' }}">
+        <a href="{{ route('dashboard.products.index') }}" class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 rounded {{ request()->routeIs('dashboard.products.*') ? 'bg-gray-700' : '' }}">
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
             Products
         </a>
 
-        <a href="{{ route('admin.orders.index') }}" class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 rounded {{ request()->routeIs('admin.orders.*') ? 'bg-gray-700' : '' }}">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-            Orders
-        </a>
-
-        <a href="{{ route('admin.reports') }}" class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 rounded {{ request()->routeIs('admin.reports') ? 'bg-gray-700' : '' }}">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            Reports
-        </a> --}}
     </nav>
 
     <!-- User Section -->
@@ -85,9 +72,7 @@
             <a href="{{ route('dashboard.categories.index') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">Categories</a>
             <a href="{{ route('dashboard.option-groups.index') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">Option Groups</a>
             <a href="{{ route('dashboard.options.index') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">Options</a>
-            {{-- <a href="{{ route('admin.products.index') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">Products</a>
-            <a href="{{ route('admin.orders.index') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">Orders</a>
-            <a href="{{ route('admin.reports') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">Reports</a> --}}
+            <a href="{{ route('dashboard.products.index') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded">Products</a>
         </nav>
     </div>
 </div>
