@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Models\User;
 
 class CheckFirstUserSetup
 {
@@ -20,7 +20,7 @@ class CheckFirstUserSetup
         if (User::count() === 0) {
             // Jika user mencoba mengakses route selain /setup-admin,
             // redirect ke /setup-admin
-            if (!$request->is('setup-admin') && !$request->is('setup-admin/*')) {
+            if (! $request->is('setup-admin') && ! $request->is('setup-admin/*')) {
                 return redirect()->route('setup-admin.create');
             }
         }
@@ -28,7 +28,7 @@ class CheckFirstUserSetup
         // redirect ke dashboard (jika sudah login) atau login (jika belum login)
         elseif ($request->is('setup-admin') || $request->is('setup-admin/*')) {
             if (auth()->check()) {
-                return redirect()->route('dashboard');
+                return redirect()->route('dashboard.index');
             } else {
                 return redirect()->route('login');
             }
