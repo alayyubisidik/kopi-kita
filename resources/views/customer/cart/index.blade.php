@@ -111,12 +111,11 @@
                 Tambah Item
             </a>
 
-            <button type="button"
-                class="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-md hover:bg-blue-700 transition-colors font-semibold text-sm cursor-not-allowed opacity-60"
-                disabled>
+            <a href="{{ route('checkout.index') }}"
+                class="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-md hover:bg-blue-700 transition-colors font-semibold text-sm">
                 <i data-lucide="credit-card" class="h-4 w-4"></i>
                 Checkout
-            </button>
+            </a>
         </div>
 
         {{-- Clear Cart --}}
