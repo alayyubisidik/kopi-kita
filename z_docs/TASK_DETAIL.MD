@@ -1,145 +1,194 @@
 # Phase 16 — Admin Order Management
 
-## 16.1 Order List
+## 16.1 Order Routes & Controller
 
-*** [ ] Admin dapat melihat daftar seluruh order.**
+*** [ ] Buat `Admin\OrderController`.**
 
-*** [ ] Tampilkan Order code.**
+*** [ ] Buat route dashboard `/admin/orders` (index, show, update).**
 
-*** [ ] Tampilkan Customer name.**
+*** [ ] Gunakan middleware `auth`.**
 
-*** [ ] Tampilkan Order type (online/offline).**
+*** [ ] Pastikan route terproteksi dengan baik.**
 
-*** [ ] Tampilkan Total order.**
-
-*** [ ] Tampilkan Payment method (midtrans/cash/qris).**
-
-*** [ ] Tampilkan Payment status (pending/success/failed/expired).**
-
-*** [ ] Tampilkan Tanggal dan Waktu order (created_at).**
-
-*** [ ] Tampilkan Status order (processing/completed).**
-
-*** [ ] Sediakan fitur pencarian berdasarkan Order code dan Customer name.**
-
-*** [ ] Sediakan filter berdasarkan Order type, Payment method, Payment status, dan Order status.**
-
-*** [ ] Tampilkan dalam bentuk tabel yang rapi dan responsive.**
-
-*** [ ] Gunakan pagination untuk membatasi jumlah data per halaman.**
+*** [ ] Gunakan named route yang konsisten.**
 
 ---
 
-## 16.2 Order Detail
+## 16.2 Order List View (Index)
 
-*** [ ] Admin dapat melihat detail setiap order.**
+*** [ ] Buat halaman `resources/views/admin/orders/index.blade.php`.**
 
-*** [ ] Tampilkan Order code, Customer name, Order type, Total, Payment method, Payment status, dan Tanggal order.**
+*** [ ] Tampilkan daftar pesanan (order list) dalam bentuk tabel.**
 
-*** [ ] Tampilkan daftar Product yang dipesan (Product list).**
+*** [ ] Ambil data order dari database beserta relasi `payments`.**
 
-*** [ ] Tampilkan Quantity setiap product.**
+*** [ ] Urutkan data berdasarkan waktu terbaru (latest).**
 
-*** [ ] Tampilkan Customization (options) yang dipilih untuk setiap product.**
+*** [ ] Gunakan pagination (misal 15 atau 20 item per halaman).**
 
-*** [ ] Tampilkan Notes atau catatan tambahan dari customer.**
+*** [ ] Kolom tabel yang harus ada:**
+- Order Code
+- Customer Name
+- Order Type (Online/Offline)
+- Total Amount
+- Payment Method
+- Payment Status
+- Order Status (Processing, Ready, Completed)
+- Created At
+- Action (tombol untuk melihat detail).**
 
-*** [ ] Tampilkan Subtotal dan Total akhir order.**
-
-*** [ ] Tampilkan informasi lengkap mengenai Payment (midtrans response, paid_at, dll jika relevan).**
-
-*** [ ] Tampilkan status operasional order saat ini.**
-
-*** [ ] Pastikan tampilan detail order mudah dibaca dan diorganisir dengan baik.**
-
----
-
-## 16.3 Order Processing
-
-*** [ ] Order baru masuk setelah pembayaran berhasil. Sistem tidak membutuhkan status `Pending Payment` sebagai order workflow.**
-
-*** [ ] Gunakan status operasional minimal sesuai database `orders.status` (enum: processing, completed).**
-
-*** [ ] Order secara default masuk dengan status `processing`.**
-
-*** [ ] Admin dapat menandai order menjadi `completed` ketika order sudah selesai.**
-
-*** [ ] Sediakan tombol atau action untuk mengubah status order.**
-
-*** [ ] Pastikan perubahan status tersimpan di database.**
-
-*** [ ] Status pembayaran (di tabel `payments`) tetap disimpan terpisah dari status proses order (di tabel `orders`).**
-
-*** [ ] Tambahkan log aktivitas (menggunakan Activitylog) saat admin mengubah status order.**
-
-*** [ ] Tampilkan notifikasi (toast) setelah status berhasil diubah.**
+*** [ ] Gunakan badge/label berwarna untuk status (misal: hijau untuk Completed, kuning untuk Processing/Ready, abu-abu untuk Offline).**
 
 ---
 
-## 16.4 Route & Controller Setup
+## 16.3 Order List Filters & Search
 
-*** [ ] Buat `AdminOrderController` di namespace `App\Http\Controllers\Admin`.**
+*** [ ] Tambahkan fitur pencarian berdasarkan Order Code atau Customer Name.**
 
-*** [ ] Buat route `GET /admin/orders` untuk halaman list order.**
+*** [ ] Tambahkan filter berdasarkan Order Status.**
 
-*** [ ] Gunakan named route, misalnya `admin.orders.index`.**
+*** [ ] Tambahkan filter berdasarkan Payment Status.**
 
-*** [ ] Buat route `GET /admin/orders/{order}` untuk halaman detail order.**
+*** [ ] Tambahkan filter berdasarkan Order Type.**
 
-*** [ ] Gunakan named route, misalnya `admin.orders.show`.**
-
-*** [ ] Buat route `PATCH /admin/orders/{order}/status` untuk mengupdate status order.**
-
-*** [ ] Gunakan named route, misalnya `admin.orders.update-status`.**
-
-*** [ ] Pastikan seluruh route order protected oleh middleware admin (auth).**
+*** [ ] Pastikan query database efisien saat memfilter data.**
 
 ---
 
-## 16.5 UI & User Experience
+## 16.4 Order Detail View (Show)
 
-*** [ ] Gunakan layout admin yang sudah ada.**
+*** [ ] Buat halaman `resources/views/admin/orders/show.blade.php`.**
 
-*** [ ] Gunakan Tailwind CSS 4 dan komponen UI yang konsisten dengan halaman admin lainnya.**
+*** [ ] Ambil data order beserta relasi `order_items`, `order_item_options`, dan `payments`.**
 
-*** [ ] Gunakan badge berwarna untuk membedakan status order (misal: kuning untuk processing, hijau untuk completed).**
+*** [ ] Tampilkan informasi utama order:**
+- Order Code
+- Waktu Transaksi
+- Customer Name
+- Order Type
+- Total Amount.**
 
-*** [ ] Gunakan badge berwarna untuk membedakan payment status.**
+*** [ ] Tampilkan daftar item pesanan (`order_items`):**
+- Nama Produk
+- Harga Produk
+- Kuantitas
+- Catatan (Note)
+- Subtotal Item.**
 
-*** [ ] Sediakan konfirmasi (modal) sebelum admin mengubah status order menjadi completed.**
+*** [ ] Tampilkan kustomisasi untuk setiap item (`order_item_options`):**
+- Nama Option Group
+- Nama Option
+- Additional Price.**
 
-*** [ ] Pastikan halaman order list dan detail responsive pada berbagai ukuran layar.**
+*** [ ] Tampilkan informasi pembayaran (dari tabel `payments`):**
+- Payment Method
+- Payment Status
+- Amount
+- Timestamp (Paid At).**
 
-*** [ ] Tampilkan empty state jika belum ada order yang masuk.**
+*** [ ] Tampilkan status pesanan (Order Status).**
+
+---
+
+## 16.5 Order Status Update
+
+*** [ ] Sediakan UI (misalnya tombol atau dropdown) pada halaman detail untuk mengupdate Order Status.**
+
+*** [ ] Status workflow yang didukung:**
+1. Paid / Processing
+2. Ready
+3. Completed.**
+
+*** [ ] Jangan menggunakan status `Pending Payment` dalam workflow operasional order ini, karena order online masuk setelah pembayaran berhasil.**
+
+*** [ ] Buat route dan method di controller (misal `PATCH /admin/orders/{order}/status`) untuk menangani update.**
+
+*** [ ] Validasi perubahan status (hanya status yang valid yang diizinkan).**
+
+*** [ ] Tampilkan flash message / notifikasi sukses setelah status diupdate.**
+
+*** [ ] Saat status diubah ke `Ready`, pastikan ada trigger atau event yang bisa di-hook untuk Phase 17 (Browser Notification).**
 
 ---
 
 ## 16.6 Validation & Security
 
-*** [ ] Validasi request perubahan status hanya menerima nilai 'processing' atau 'completed'.**
+*** [ ] Validasi request untuk update status order.**
 
-*** [ ] Pastikan order yang sudah 'completed' tidak dapat diubah kembali menjadi 'processing' (jika diperlukan kebijakan tersebut, atau berikan peringatan).**
+*** [ ] Pastikan hanya order yang valid (ada di database) yang bisa diubah.**
 
-*** [ ] Validasi hanya admin yang terautentikasi yang dapat mengakses fitur ini.**
+*** [ ] Gunakan route model binding.**
 
-*** [ ] Cegah manipulasi parameter ID order melalui URL (tampilkan 404 jika order tidak ditemukan).**
+*** [ ] Hindari N+1 query problem pada halaman index dan show dengan eager loading relasi yang dibutuhkan.**
 
 ---
 
-## 16.7 Testing & Verification
+## 16.7 UI / UX Polish (Admin Order)
 
-*** [ ] Pastikan daftar order menampilkan semua data dengan benar sesuai filter.**
+*** [ ] Gunakan layout admin/dashboard yang sudah ada.**
 
-*** [ ] Pastikan pencarian berdasarkan Order code dan Customer name berfungsi.**
+*** [ ] Terapkan desain sederhana dan bersih dengan warna utama biru dan putih.**
 
-*** [ ] Pastikan halaman detail menampilkan semua informasi order, item, dan payment dengan benar.**
+*** [ ] Gunakan Tailwind CSS 4.**
 
-*** [ ] Pastikan admin dapat mengubah status order dari `processing` menjadi `completed`.**
+*** [ ] Gunakan ikon yang relevan (misal Lucide Icons) untuk action button (view, update).**
 
-*** [ ] Pastikan status order tersimpan dengan benar di database.**
+*** [ ] Desain tabel responsif.**
 
-*** [ ] Pastikan notifikasi keberhasilan muncul setelah mengubah status.**
+# Phase 17 — Browser Notification
 
-*** [ ] Pastikan order dengan status `completed` tertampil dengan benar di list dan detail.**
+## 17.1 Notification Architecture & Strategy
 
-*** [ ] Pastikan tidak ada N+1 query problem saat menampilkan order list dan detail (gunakan eager loading untuk `order_items`, `payments`, dll).**
+*** [ ] Gunakan teknologi browser push notification standar (misal Push API / Service Workers atau pustaka sederhana jika memungkinkan tanpa backend kompleks, namun dalam konteks ini, pertimbangkan notifikasi berbasis session/polling atau Server-Sent Events (SSE) / WebSockets/Pusher/Laravel Reverb jika realtime diperlukan). **Pastikan pendekatan teknis ditentukan dan disepakati (misal: Laravel Reverb).**
+
+*** [ ] Notifikasi ditargetkan kepada customer yang sedang menunggu pesanannya (di halaman frontend/order tracker).**
+
+*** [ ] Sistem tidak menggunakan SMS, WhatsApp, atau Email.**
+
+---
+
+## 17.2 Notification Permission Request
+
+*** [ ] Minta izin (permission) notifikasi dari browser customer.**
+
+*** [ ] Jangan meminta izin langsung saat halaman pertama kali dibuka (mengganggu UX).**
+
+*** [ ] Minta izin pada momen yang tepat, contoh: setelah customer berhasil checkout atau di halaman "Payment Success / Order Tracking".**
+
+*** [ ] Buat tombol atau prompt UI kustom yang mengedukasi customer mengapa notifikasi dibutuhkan ("Nyalakan notifikasi untuk mengetahui kapan pesananmu siap").**
+
+*** [ ] Handle kondisi ketika customer menolak izin (blokir) dengan fallback UI yang memberitahu mereka untuk cek halaman secara berkala.**
+
+---
+
+## 17.3 Ready Notification Implementation
+
+*** [ ] Buat event di Laravel, misalnya `OrderReadyEvent`, yang di-trigger (dispatch) pada saat Admin mengubah status order menjadi `Ready` (di Phase 16).**
+
+*** [ ] Tangkap event tersebut di frontend customer yang terkait dengan order tersebut.**
+
+*** [ ] Saat event diterima dan izin notifikasi diberikan, tampilkan system notification (Browser Notification).**
+
+*** [ ] Isi notifikasi harus jelas dan sesuai panduan:**
+- Title: "Pesanan Siap!" (atau sejenisnya)
+- Body: "[ORDER-CODE] sudah siap. Silakan ambil pesanan Anda."
+
+*** [ ] Pastikan notifikasi hanya dikirim ke customer yang memiliki order tersebut (implementasi channel/room per order).**
+
+---
+
+## 17.4 Frontend Listener & Service Worker
+
+*** [ ] Buat atau konfigurasi Service Worker (jika menggunakan Push API murni) atau inisialisasi listener JS (Echo/Reverb) di halaman frontend customer.**
+
+*** [ ] Pastikan koneksi/subscription hanya aktif ketika order belum `Completed`.**
+
+*** [ ] Uji notifikasi di berbagai browser (Chrome, Firefox, Safari) dan perhatikan batasan HTTPS (Push Notification biasanya wajib HTTPS, pastikan ada solusi untuk local dev seperti ngrok atau konfigurasi herd).**
+
+---
+
+## 17.5 On-Page Fallback
+
+*** [ ] Jika browser tidak mendukung notifikasi atau permission ditolak, pastikan UI halaman order tracking (jika ada) bisa melakukan auto-update atau polling secara berkala (fallback) saat order berubah menjadi `Ready`.**
+
+*** [ ] Tampilkan juga notifikasi in-app (Toast/Alert) di layar browser (DOM) bersamaan dengan system notification.**
