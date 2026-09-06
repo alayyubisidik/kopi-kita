@@ -1318,48 +1318,255 @@ Hasil:
 
 # Phase 10 — Product Detail & Customization UI
 
-## 10.1 Product Detail
+## 10.1 Product Detail Route & Controller
 
-Ketika customer memilih product:
+*** [ ] Buat route public `GET /menu/{product:slug}` untuk halaman detail product.**
 
-* [ ] Tampilkan image.
-* [ ] Tampilkan name.
-* [ ] Tampilkan description.
-* [ ] Tampilkan base price.
-* [ ] Tampilkan option groups.
+*** [ ] Gunakan named route, misalnya `customer.menu.show`.**
 
-## 10.2 Single Option
+*** [ ] Pastikan halaman dapat diakses tanpa login.**
 
-Untuk option group `single`:
+*** [ ] Tambahkan method `show` pada `CustomerMenuController` atau buat `CustomerProductController` terpisah.**
 
-* [ ] Radio/select behavior.
-* [ ] Wajib pilih sesuai `min_selection`.
-* [ ] Tampilkan additional price.
+*** [ ] Ambil data product menggunakan slug.**
 
-## 10.3 Multiple Option
+*** [ ] Eager load relationship `category`, `optionGroups`, dan `optionGroups.options` pada query.**
 
-Untuk `multiple`:
+*** [ ] Urutkan option group berdasarkan `product_option_groups.sort_order`.**
 
-* [ ] Checkbox behavior.
-* [ ] Validate min selection.
-* [ ] Validate max selection.
-* [ ] Update total harga secara dinamis.
+*** [ ] Urutkan option berdasarkan `options.sort_order`.**
 
-## 10.4 Quantity
+*** [ ] Pastikan hanya product dengan `is_available = true` yang dapat diakses untuk diorder.**
 
-* [ ] Quantity increment.
-* [ ] Quantity decrement.
-* [ ] Minimum quantity = 1.
+*** [ ] Jika product tidak ditemukan, kembalikan 404.**
 
-## 10.5 Additional Note
+*** [ ] Jangan mengambil data product langsung dari Blade.**
 
-* [ ] Textarea catatan.
-* [ ] Support maksimal 100 karakter.
-* [ ] Character counter.
+---
 
-## 10.6 Dynamic Price
+## 10.2 Product Detail View
 
-Contoh:
+*** [ ] Buat view `resources/views/customer/menu/show.blade.php`.**
+
+*** [ ] Gunakan `layouts.customer` sebagai layout.**
+
+*** [ ] Tampilkan image product.**
+
+*** [ ] Gunakan image default jika product tidak memiliki image.**
+
+*** [ ] Tampilkan nama product.**
+
+*** [ ] Tampilkan nama category product.**
+
+*** [ ] Tampilkan description product jika tersedia.**
+
+*** [ ] Tampilkan harga dasar product dalam format Rupiah.**
+
+*** [ ] Tampilkan seluruh option group yang terhubung ke product.**
+
+*** [ ] Tampilkan options di dalam setiap option group.**
+
+*** [ ] Tampilkan additional price setiap option dalam format Rupiah.**
+
+*** [ ] Tampilkan field quantity.**
+
+*** [ ] Tampilkan field additional note.**
+
+*** [ ] Tampilkan dynamic price summary.**
+
+*** [ ] Tampilkan tombol Add to Cart.**
+
+*** [ ] Tambahkan link kembali ke halaman menu.**
+
+*** [ ] Gunakan `layouts.customer` yang sudah ada.**
+
+*** [ ] Gunakan Tailwind CSS 4 yang sudah dikonfigurasi.**
+
+*** [ ] Gunakan Lucide Icons.**
+
+*** [ ] Gunakan desain mobile-first.**
+
+*** [ ] Pastikan layout responsive pada mobile, tablet, dan desktop.**
+
+---
+
+## 10.3 Product Image
+
+*** [ ] Tampilkan image product dari media/image yang tersimpan.**
+
+*** [ ] Gunakan image default jika product tidak memiliki image.**
+
+*** [ ] Gunakan ukuran/aspect ratio yang konsisten.**
+
+*** [ ] Pastikan image responsive.**
+
+---
+
+## 10.4 Option Group Display
+
+*** [ ] Tampilkan seluruh option group yang terhubung ke product sesuai `product_option_groups.sort_order`.**
+
+*** [ ] Tampilkan nama setiap option group.**
+
+*** [ ] Tampilkan description option group jika tersedia.**
+
+*** [ ] Tampilkan `selection_type` secara implisit melalui UI yang sesuai.**
+
+*** [ ] Untuk `selection_type = single`: gunakan radio button.**
+
+*** [ ] Untuk `selection_type = multiple`: gunakan checkbox.**
+
+*** [ ] Tampilkan informasi min/max selection jika diperlukan.**
+
+*** [ ] Tampilkan seluruh option di dalam option group sesuai `options.sort_order`.**
+
+*** [ ] Tampilkan nama setiap option.**
+
+*** [ ] Tampilkan additional price setiap option dalam format Rupiah.**
+
+*** [ ] Jika additional price = 0, tampilkan `Gratis` atau `+Rp0`.**
+
+*** [ ] Option dengan `is_available = false` tetap ditampilkan.**
+
+*** [ ] Option dengan `is_available = false` harus ditampilkan sebagai disabled.**
+
+*** [ ] Option disabled tidak dapat dipilih.**
+
+---
+
+## 10.5 Single Selection (Radio)
+
+*** [ ] Untuk option group dengan `selection_type = single`, gunakan radio button.**
+
+*** [ ] Hanya satu option yang dapat dipilih dalam satu option group.**
+
+*** [ ] Jika `min_selection >= 1`, customer wajib memilih minimal satu option.**
+
+*** [ ] Tandai option group sebagai required jika `min_selection >= 1`.**
+
+*** [ ] Radio button menggunakan `name` yang unik per option group.**
+
+*** [ ] Pastikan radio button dapat diidentifikasi berdasarkan `option_group_id`.**
+
+### Contoh
+
+```text
+Temperature (Wajib pilih 1)
+○ Hot
+○ Iced     +Rp0
+○ Blended  +Rp2.000
+```
+
+---
+
+## 10.6 Multiple Selection (Checkbox)
+
+*** [ ] Untuk option group dengan `selection_type = multiple`, gunakan checkbox.**
+
+*** [ ] Customer dapat memilih lebih dari satu option.**
+
+*** [ ] Jika `min_selection > 0`, customer wajib memilih minimal sejumlah `min_selection`.**
+
+*** [ ] Jika `max_selection` tersedia, batasi maksimal pilihan sejumlah `max_selection`.**
+
+*** [ ] Jika `max_selection = null` atau tidak diatur, pilihan tidak dibatasi.**
+
+*** [ ] Validasi min/max selection dilakukan pada frontend menggunakan Alpine.js.**
+
+*** [ ] Validasi min/max selection juga dilakukan pada backend saat Add to Cart.**
+
+### Contoh
+
+```text
+Topping (Pilih 1–3)
+☐ Oreo          +Rp4.000
+☐ Whipped Cream +Rp6.000
+☐ Choco Chips   +Rp3.000
+☐ Granola       +Rp5.000
+```
+
+---
+
+## 10.7 Quantity
+
+*** [ ] Tampilkan input quantity pada halaman detail product.**
+
+*** [ ] Quantity default dimulai dari `1`.**
+
+*** [ ] Sediakan tombol increment untuk menambah quantity.**
+
+*** [ ] Sediakan tombol decrement untuk mengurangi quantity.**
+
+*** [ ] Quantity minimum adalah `1`.**
+
+*** [ ] Tombol decrement tidak dapat mengurangi quantity di bawah `1`.**
+
+*** [ ] Quantity harus berupa angka bulat positif.**
+
+*** [ ] Update dynamic price ketika quantity berubah.**
+
+*** [ ] Gunakan Alpine.js untuk interaksi quantity.**
+
+### Contoh
+
+```text
+Quantity
+[−]  2  [+]
+```
+
+---
+
+## 10.8 Additional Note
+
+*** [ ] Tampilkan textarea untuk catatan tambahan customer.**
+
+*** [ ] Label field: `Catatan` atau `Additional Note`.**
+
+*** [ ] Catatan bersifat opsional.**
+
+*** [ ] Maksimal panjang catatan adalah `100` karakter sesuai schema `order_items.note`.**
+
+*** [ ] Tampilkan character counter yang menunjukkan sisa karakter.**
+
+*** [ ] Validasi panjang karakter pada frontend menggunakan Alpine.js.**
+
+*** [ ] Validasi panjang karakter juga dilakukan pada backend saat Add to Cart.**
+
+### Contoh
+
+```text
+Catatan (opsional)
+┌─────────────────────────────┐
+│ Kurangi es, gula sedikit    │
+└─────────────────────────────┘
+                          28/100
+```
+
+---
+
+## 10.9 Dynamic Price
+
+*** [ ] Tampilkan ringkasan harga secara dinamis berdasarkan pilihan customer.**
+
+*** [ ] Tampilkan harga dasar product.**
+
+*** [ ] Tampilkan setiap option yang dipilih beserta additional price-nya.**
+
+*** [ ] Tampilkan total harga per item (harga dasar + total additional price).**
+
+*** [ ] Tampilkan total harga keseluruhan (total per item × quantity).**
+
+*** [ ] Update ringkasan harga setiap kali pilihan atau quantity berubah.**
+
+*** [ ] Gunakan Alpine.js untuk reaktivitas perhitungan harga.**
+
+*** [ ] Format seluruh angka harga dalam Rupiah.**
+
+*** [ ] Perhitungan harga pada frontend hanya bersifat display.**
+
+*** [ ] Harga final tetap dihitung ulang pada backend saat Add to Cart.**
+
+### Contoh
 
 ```text
 Base Price              Rp19.000
@@ -1368,9 +1575,249 @@ Oreo                    +Rp4.000
 Whipped Cream           +Rp6.000
 --------------------------------
 Item Total              Rp32.000
+
+Quantity: 2
+--------------------------------
+Total                   Rp64.000
 ```
 
-Harga harus dihitung ulang berdasarkan pilihan customer.
+---
+
+## 10.10 Add to Cart Button
+
+*** [ ] Tampilkan tombol `Add to Cart` pada halaman detail product.**
+
+*** [ ] Tombol mengirimkan form ke endpoint Add to Cart.**
+
+*** [ ] Sertakan data product_id, options yang dipilih, quantity, dan note.**
+
+*** [ ] Gunakan HTTP method `POST`.**
+
+*** [ ] Tambahkan CSRF protection.**
+
+*** [ ] Jika product `is_available = false`, tampilkan status unavailable dan disable tombol Add to Cart.**
+
+*** [ ] Jangan hanya mengandalkan disable button pada frontend.**
+
+*** [ ] Validasi availability juga dilakukan pada backend.**
+
+---
+
+## 10.11 Product Unavailable State
+
+*** [ ] Jika product `is_available = false`, tampilkan label atau banner `Tidak Tersedia`.**
+
+*** [ ] Disable tombol Add to Cart.**
+
+*** [ ] Disable seluruh input option.**
+
+*** [ ] Disable input quantity.**
+
+*** [ ] Disable input note.**
+
+*** [ ] Tampilkan pesan bahwa product sedang tidak tersedia.**
+
+### Contoh
+
+```text
+[Tidak Tersedia]
+
+Product ini sedang tidak tersedia untuk dipesan.
+```
+
+---
+
+## 10.12 Customizable vs Non-Customizable
+
+*** [ ] Jika product `is_customizable = true`, tampilkan section option group dan options.**
+
+*** [ ] Jika product `is_customizable = false`, sembunyikan section option group.**
+
+*** [ ] Jika product `is_customizable = false`, tampilkan langsung quantity dan note.**
+
+*** [ ] Jangan menampilkan section option group kosong jika product tidak memiliki option group.**
+
+### Contoh: Product Customizable
+
+```text
+Spanish Latte — Rp19.000
+
+[Image]
+
+Temperature (Wajib pilih 1)
+○ Hot
+○ Iced
+
+Size (Wajib pilih 1)
+○ Regular
+○ Large  +Rp3.000
+
+Topping (Pilih maks. 3)
+☐ Oreo          +Rp4.000
+☐ Whipped Cream +Rp6.000
+
+Quantity: [−] 1 [+]
+Catatan: ________________
+
+Base Price    Rp19.000
+--------------------------------
+Total         Rp19.000
+
+[Add to Cart]
+```
+
+### Contoh: Product Non-Customizable
+
+```text
+Roti Coklat — Rp12.000
+
+[Image]
+
+Quantity: [−] 1 [+]
+Catatan: ________________
+
+Total         Rp12.000
+
+[Add to Cart]
+```
+
+---
+
+## 10.13 Alpine.js State Management
+
+*** [ ] Gunakan Alpine.js untuk mengelola state di halaman product detail.**
+
+*** [ ] State meliputi: pilihan option per option group, quantity, note, dan dynamic price.**
+
+*** [ ] Inisialisasi state dengan nilai default yang sesuai.**
+
+*** [ ] Pastikan Alpine.js sudah tersedia pada layout customer.**
+
+*** [ ] Jangan menggunakan JavaScript framework lain.**
+
+*** [ ] Jangan melakukan request AJAX untuk update harga; hitung secara lokal.**
+
+---
+
+## 10.14 Product Detail UI
+
+*** [ ] Gunakan warna utama putih dan biru.**
+
+*** [ ] Gunakan desain sederhana dan minimal.**
+
+*** [ ] Gunakan background putih sebagai dasar halaman.**
+
+*** [ ] Gunakan biru sebagai warna utama untuk button dan active state.**
+
+*** [ ] Gunakan Lucide Icons untuk icon quantity dan navigasi.**
+
+*** [ ] Gunakan Tailwind CSS 4 yang sudah dikonfigurasi.**
+
+*** [ ] Pastikan tampilan mobile-first dan responsive.**
+
+*** [ ] Jangan menggunakan animasi kompleks.**
+
+*** [ ] Jangan membuat efek visual berlebihan.**
+
+*** [ ] Jangan melakukan UI polishing pada phase ini.**
+
+*** [ ] Fokus pada fungsi dan usability.**
+
+---
+
+## 10.15 Feature Scope
+
+*** [ ] Phase ini hanya menangani product detail dan customization UI.**
+
+*** [ ] Jangan implementasikan penyimpanan ke cart pada phase ini.**
+
+*** [ ] Jangan implementasikan checkout pada phase ini.**
+
+*** [ ] Jangan implementasikan payment pada phase ini.**
+
+*** [ ] Jangan implementasikan order processing pada phase ini.**
+
+*** [ ] Fitur cart diimplementasikan pada Phase 11.**
+
+---
+
+## 10.16 Product Detail Verification
+
+*** [ ] Pastikan customer dapat membuka halaman detail product dari menu.**
+
+*** [ ] Pastikan data product dimuat dari database melalui controller.**
+
+*** [ ] Pastikan image product tampil, dengan fallback jika tidak ada.**
+
+*** [ ] Pastikan nama product tampil.**
+
+*** [ ] Pastikan category product tampil.**
+
+*** [ ] Pastikan description product tampil jika tersedia.**
+
+*** [ ] Pastikan harga dasar tampil dalam format Rupiah.**
+
+*** [ ] Pastikan option group tampil sesuai urutan `product_option_groups.sort_order`.**
+
+*** [ ] Pastikan options tampil di dalam option group sesuai `options.sort_order`.**
+
+*** [ ] Pastikan additional price setiap option tampil dalam format Rupiah.**
+
+*** [ ] Pastikan option group `single` menggunakan radio button.**
+
+*** [ ] Pastikan hanya satu option dapat dipilih pada option group `single`.**
+
+*** [ ] Pastikan option group `multiple` menggunakan checkbox.**
+
+*** [ ] Pastikan lebih dari satu option dapat dipilih pada option group `multiple`.**
+
+*** [ ] Pastikan validasi `min_selection` bekerja.**
+
+*** [ ] Pastikan validasi `max_selection` bekerja.**
+
+*** [ ] Pastikan option `is_available = false` ditampilkan sebagai disabled.**
+
+*** [ ] Pastikan option disabled tidak dapat dipilih.**
+
+*** [ ] Pastikan quantity default dimulai dari `1`.**
+
+*** [ ] Pastikan quantity dapat di-increment.**
+
+*** [ ] Pastikan quantity tidak dapat di-decrement di bawah `1`.**
+
+*** [ ] Pastikan field note tersedia dan dapat diisi.**
+
+*** [ ] Pastikan character counter note bekerja.**
+
+*** [ ] Pastikan dynamic price berubah ketika option dipilih.**
+
+*** [ ] Pastikan dynamic price berubah ketika quantity berubah.**
+
+*** [ ] Pastikan format harga dalam Rupiah.**
+
+*** [ ] Pastikan product non-customizable tidak menampilkan section option group.**
+
+*** [ ] Pastikan product unavailable menampilkan status dan tombol Add to Cart disabled.**
+
+*** [ ] Pastikan halaman responsive pada mobile, tablet, dan desktop.**
+
+*** [ ] Pastikan tidak terjadi N+1 query pada halaman product detail.**
+
+*** [ ] Pastikan UI tetap sederhana dan tidak menghabiskan waktu pada visual polish.**
+
+---
+
+### Prinsip UI untuk Phase berikutnya
+
+> **Feature First, UI Later**
+
+**Seluruh halaman pada phase ini cukup menggunakan UI sederhana dengan kombinasi putih dan biru.**
+
+**Fokus utama adalah memastikan routing, query database, tampilan option group dan options, interaksi Alpine.js untuk selection, quantity, note, dan dynamic price bekerja dengan benar.**
+
+**Jangan mengejar desain final, animasi, micro-interaction, atau visual polish pada phase ini.**
+
+**Setelah seluruh fitur aplikasi selesai, akan dibuat phase khusus untuk `UI Polish / Design Refinement / Refactoring` yang menangani peningkatan visual seluruh aplikasi secara menyeluruh.**
 
 ---
 
@@ -1378,44 +1825,459 @@ Harga harus dihitung ulang berdasarkan pilihan customer.
 
 ## 11.1 Cart Storage
 
-* [ ] Implement cart menggunakan session.
-* [ ] Tidak membutuhkan database cart.
-* [ ] Guest customer dapat menggunakan cart.
+*** [ ] Implement cart menggunakan Laravel session.**
 
-## 11.2 Add to Cart
+*** [ ] Tidak membutuhkan tabel database untuk cart.**
 
-* [ ] Validasi product.
-* [ ] Validasi availability.
-* [ ] Validasi customization.
-* [ ] Validasi option availability.
-* [ ] Simpan configuration item.
-* [ ] Simpan quantity.
-* [ ] Simpan note.
+*** [ ] Guest customer (tanpa login) dapat menggunakan cart.**
 
-## 11.3 Cart Management
+*** [ ] Cart tersimpan selama session aktif.**
 
-* [ ] View cart.
-* [ ] Update quantity.
-* [ ] Remove item.
-* [ ] Clear cart.
-* [ ] Calculate subtotal.
-* [ ] Calculate total.
+*** [ ] Cart otomatis hilang ketika session berakhir atau browser ditutup.**
 
-## 11.4 Product Identity
+*** [ ] Gunakan key session yang konsisten, misalnya `cart`.**
+
+*** [ ] Jangan menyimpan cart ke cookie secara langsung.**
+
+*** [ ] Jangan menyimpan cart ke database.**
+
+---
+
+## 11.2 Cart Item Structure
+
+*** [ ] Setiap item cart menyimpan informasi berikut:**
+
+*** [ ] `product_id` — ID product.**
+
+*** [ ] `product_name` — nama product saat ditambahkan (snapshot).**
+
+*** [ ] `product_price` — harga dasar product saat ditambahkan (snapshot).**
+
+*** [ ] `options` — array dari option yang dipilih.**
+
+*** [ ] Setiap option menyimpan `option_id`, `option_group_id`, `option_name`, `option_group_name`, dan `additional_price`.**
+
+*** [ ] `quantity` — jumlah item.**
+
+*** [ ] `note` — catatan tambahan customer.**
+
+*** [ ] `subtotal` — total harga per item (dihitung server-side).**
+
+*** [ ] `cart_item_key` — unique key untuk mengidentifikasi item dalam cart.**
+
+---
+
+## 11.3 Cart Item Key (Product Identity)
 
 Product yang sama dengan customization berbeda harus dianggap sebagai item berbeda.
 
-Contoh:
+*** [ ] Generate `cart_item_key` berdasarkan kombinasi `product_id` dan option yang dipilih.**
+
+*** [ ] Gunakan hash (misalnya MD5 atau SHA1) dari kombinasi `product_id` + sorted `option_ids` sebagai key.**
+
+*** [ ] Jika customer menambahkan product yang sama dengan kombinasi option yang sama, increment quantity item tersebut.**
+
+*** [ ] Jika customer menambahkan product yang sama dengan kombinasi option yang berbeda, buat item baru.**
+
+### Contoh
 
 ```text
-Spanish Latte
-Large + Oreo
+Spanish Latte + Large + Oreo
+→ cart_item_key: md5("product_1|option_3,option_7")
 
-Spanish Latte
-Regular + No Ice
+Spanish Latte + Regular + No Ice
+→ cart_item_key: md5("product_1|option_2,option_5")
 ```
 
 Keduanya menjadi cart item berbeda.
+
+---
+
+## 11.4 Add to Cart Route & Controller
+
+*** [ ] Buat `CartController` di namespace `App\Http\Controllers`.**
+
+*** [ ] Buat route `POST /cart` untuk menambahkan item ke cart.**
+
+*** [ ] Gunakan named route, misalnya `cart.store`.**
+
+*** [ ] Buat route `GET /cart` untuk menampilkan halaman cart.**
+
+*** [ ] Gunakan named route, misalnya `cart.index`.**
+
+*** [ ] Buat route `PATCH /cart/{cartItemKey}` untuk mengupdate quantity item.**
+
+*** [ ] Gunakan named route, misalnya `cart.update`.**
+
+*** [ ] Buat route `DELETE /cart/{cartItemKey}` untuk menghapus item dari cart.**
+
+*** [ ] Gunakan named route, misalnya `cart.destroy`.**
+
+*** [ ] Buat route `DELETE /cart` untuk mengosongkan seluruh cart.**
+
+*** [ ] Gunakan named route, misalnya `cart.clear`.**
+
+*** [ ] Pastikan seluruh route cart dapat diakses tanpa login.**
+
+*** [ ] Tambahkan CSRF protection pada seluruh route yang memodifikasi data.**
+
+---
+
+## 11.5 Add to Cart Validation
+
+*** [ ] Validasi `product_id` wajib diisi.**
+
+*** [ ] Validasi product harus ada di database.**
+
+*** [ ] Validasi product `is_available = true`.**
+
+*** [ ] Jika product tidak tersedia, kembalikan error yang sesuai.**
+
+*** [ ] Validasi `quantity` wajib diisi.**
+
+*** [ ] Validasi `quantity` harus berupa angka bulat positif.**
+
+*** [ ] Validasi `quantity` minimal `1`.**
+
+*** [ ] Validasi `note` bersifat opsional.**
+
+*** [ ] Validasi panjang `note` maksimal `100` karakter.**
+
+*** [ ] Validasi `options` yang dikirimkan harus berasal dari option group yang terhubung ke product.**
+
+*** [ ] Validasi setiap option yang dipilih harus `is_available = true`.**
+
+*** [ ] Validasi min_selection setiap option group.**
+
+*** [ ] Validasi max_selection setiap option group.**
+
+*** [ ] Jangan mempercayai harga dari frontend.**
+
+*** [ ] Hitung ulang subtotal dari database server-side.**
+
+---
+
+## 11.6 Add to Cart Logic
+
+*** [ ] Ambil data product dari database berdasarkan `product_id`.**
+
+*** [ ] Ambil data options yang dipilih dari database.**
+
+*** [ ] Hitung subtotal: harga dasar product + total additional price options yang dipilih, dikalikan quantity.**
+
+*** [ ] Generate `cart_item_key` dari kombinasi `product_id` dan sorted option IDs.**
+
+*** [ ] Jika `cart_item_key` sudah ada di session cart, increment quantity-nya.**
+
+*** [ ] Jika `cart_item_key` belum ada, tambahkan item baru ke session cart.**
+
+*** [ ] Simpan snapshot nama product dan harga product saat ditambahkan.**
+
+*** [ ] Simpan snapshot nama dan harga setiap option saat ditambahkan.**
+
+*** [ ] Redirect ke halaman sebelumnya atau halaman cart setelah berhasil.**
+
+*** [ ] Tampilkan success notification setelah item berhasil ditambahkan.**
+
+---
+
+## 11.7 Cart View
+
+*** [ ] Buat view `resources/views/customer/cart/index.blade.php`.**
+
+*** [ ] Gunakan `layouts.customer` sebagai layout.**
+
+*** [ ] Tampilkan daftar item dalam cart.**
+
+*** [ ] Tampilkan nama product setiap item.**
+
+*** [ ] Tampilkan customization/options yang dipilih setiap item.**
+
+*** [ ] Tampilkan note setiap item jika tersedia.**
+
+*** [ ] Tampilkan harga dasar setiap item.**
+
+*** [ ] Tampilkan additional price setiap option.**
+
+*** [ ] Tampilkan subtotal setiap item.**
+
+*** [ ] Tampilkan quantity setiap item.**
+
+*** [ ] Sediakan tombol increment quantity.**
+
+*** [ ] Sediakan tombol decrement quantity.**
+
+*** [ ] Sediakan tombol Remove untuk menghapus item dari cart.**
+
+*** [ ] Tampilkan cart total (jumlah seluruh subtotal item).**
+
+*** [ ] Tampilkan tombol Checkout.**
+
+*** [ ] Tampilkan tombol Clear Cart jika cart tidak kosong.**
+
+*** [ ] Tambahkan link kembali ke halaman menu.**
+
+*** [ ] Gunakan Tailwind CSS 4 yang sudah dikonfigurasi.**
+
+*** [ ] Gunakan Lucide Icons.**
+
+*** [ ] Gunakan desain mobile-first.**
+
+*** [ ] Pastikan layout responsive pada mobile, tablet, dan desktop.**
+
+---
+
+## 11.8 Cart Empty State
+
+*** [ ] Tampilkan empty state jika cart kosong.**
+
+*** [ ] Tampilkan pesan bahwa cart masih kosong.**
+
+*** [ ] Tampilkan link atau tombol untuk kembali ke halaman menu.**
+
+*** [ ] Jangan menampilkan tabel/daftar kosong tanpa informasi.**
+
+### Contoh
+
+```text
+Cart kamu masih kosong.
+
+Yuk pilih menu favoritmu!
+
+[Lihat Menu]
+```
+
+---
+
+## 11.9 Update Quantity
+
+*** [ ] Customer dapat mengubah quantity setiap item di cart.**
+
+*** [ ] Gunakan tombol increment dan decrement pada halaman cart.**
+
+*** [ ] Quantity minimum adalah `1`.**
+
+*** [ ] Tombol decrement tidak dapat mengurangi quantity di bawah `1`.**
+
+*** [ ] Update quantity melalui route `PATCH /cart/{cartItemKey}`.**
+
+*** [ ] Hitung ulang subtotal item setelah quantity diubah.**
+
+*** [ ] Update cart session setelah quantity berhasil diubah.**
+
+*** [ ] Validasi quantity baru harus berupa angka bulat positif minimal `1`.**
+
+*** [ ] Redirect kembali ke halaman cart setelah update.**
+
+---
+
+## 11.10 Remove Item
+
+*** [ ] Customer dapat menghapus item dari cart.**
+
+*** [ ] Gunakan tombol Remove pada setiap item di cart.**
+
+*** [ ] Hapus item melalui route `DELETE /cart/{cartItemKey}`.**
+
+*** [ ] Gunakan HTTP method `DELETE` dengan CSRF protection.**
+
+*** [ ] Hapus item dari session cart berdasarkan `cart_item_key`.**
+
+*** [ ] Redirect kembali ke halaman cart setelah item dihapus.**
+
+*** [ ] Tampilkan success notification setelah item berhasil dihapus.**
+
+---
+
+## 11.11 Clear Cart
+
+*** [ ] Customer dapat mengosongkan seluruh isi cart.**
+
+*** [ ] Gunakan tombol Clear Cart pada halaman cart.**
+
+*** [ ] Hapus seluruh item melalui route `DELETE /cart`.**
+
+*** [ ] Gunakan HTTP method `DELETE` dengan CSRF protection.**
+
+*** [ ] Kosongkan session cart.**
+
+*** [ ] Redirect kembali ke halaman cart setelah cart dikosongkan.**
+
+*** [ ] Tampilkan success notification setelah cart berhasil dikosongkan.**
+
+---
+
+## 11.12 Cart Total Calculation
+
+*** [ ] Hitung subtotal setiap item: (harga dasar + total additional price options) × quantity.**
+
+*** [ ] Hitung cart total: jumlah seluruh subtotal item.**
+
+*** [ ] Seluruh perhitungan dilakukan server-side.**
+
+*** [ ] Jangan mengandalkan total dari frontend sebagai sumber kebenaran.**
+
+*** [ ] Format seluruh angka harga dalam Rupiah.**
+
+### Contoh
+
+```text
+Spanish Latte
+Large (+Rp3.000), Oreo (+Rp4.000)
+Subtotal: (Rp19.000 + Rp3.000 + Rp4.000) × 2 = Rp52.000
+
+Roti Coklat
+Subtotal: Rp12.000 × 1 = Rp12.000
+
+--------------------------------
+Total: Rp64.000
+```
+
+---
+
+## 11.13 Cart Counter
+
+*** [ ] Tampilkan jumlah item dalam cart pada Cart button di header customer.**
+
+*** [ ] Counter menunjukkan total quantity seluruh item (bukan jumlah jenis item).**
+
+*** [ ] Update counter setiap kali cart dimodifikasi.**
+
+*** [ ] Jika cart kosong, sembunyikan counter atau tampilkan `0`.**
+
+### Contoh
+
+```text
+🛒 3
+```
+
+---
+
+## 11.14 Cart Service / Helper
+
+*** [ ] Pertimbangkan untuk membuat `CartService` atau helper class untuk mengelola logika cart.**
+
+*** [ ] Pisahkan logika cart dari controller.**
+
+*** [ ] `CartService` bertanggung jawab atas: get cart, add item, update item, remove item, clear cart, calculate total.**
+
+*** [ ] Controller hanya memanggil method dari `CartService`.**
+
+*** [ ] Pastikan `CartService` dapat digunakan kembali oleh CartController dan proses checkout.**
+
+---
+
+## 11.15 Cart Snapshot
+
+*** [ ] Simpan snapshot nama product dan harga product saat ditambahkan ke cart.**
+
+*** [ ] Simpan snapshot nama option group dan nama option saat ditambahkan ke cart.**
+
+*** [ ] Simpan snapshot additional price setiap option saat ditambahkan ke cart.**
+
+*** [ ] Jika harga product atau option berubah setelah item masuk cart, harga dalam cart tidak berubah.**
+
+*** [ ] Snapshot digunakan untuk menghindari inconsistency antara cart dan database.**
+
+*** [ ] Snapshot juga digunakan sebagai dasar perhitungan checkout.**
+
+---
+
+## 11.16 Cart UI
+
+*** [ ] Gunakan warna utama putih dan biru.**
+
+*** [ ] Gunakan desain sederhana dan minimal.**
+
+*** [ ] Gunakan background putih sebagai dasar halaman.**
+
+*** [ ] Gunakan biru sebagai warna utama untuk button dan active state.**
+
+*** [ ] Gunakan Lucide Icons untuk icon cart, increment, decrement, dan hapus.**
+
+*** [ ] Gunakan Tailwind CSS 4 yang sudah dikonfigurasi.**
+
+*** [ ] Pastikan tampilan mobile-first dan responsive.**
+
+*** [ ] Jangan menggunakan animasi kompleks.**
+
+*** [ ] Jangan membuat efek visual berlebihan.**
+
+*** [ ] Jangan melakukan UI polishing pada phase ini.**
+
+*** [ ] Fokus pada fungsi dan usability.**
+
+---
+
+## 11.17 Feature Scope
+
+*** [ ] Phase ini hanya menangani cart.**
+
+*** [ ] Jangan implementasikan checkout pada phase ini.**
+
+*** [ ] Jangan implementasikan payment pada phase ini.**
+
+*** [ ] Jangan implementasikan order processing pada phase ini.**
+
+*** [ ] Fitur checkout diimplementasikan pada Phase 12.**
+
+---
+
+## 11.18 Cart Verification
+
+*** [ ] Pastikan customer dapat menambahkan product ke cart dari halaman detail product.**
+
+*** [ ] Pastikan product yang sama dengan option berbeda menghasilkan item cart berbeda.**
+
+*** [ ] Pastikan product yang sama dengan option sama menggabungkan quantity.**
+
+*** [ ] Pastikan validasi product availability berjalan di backend.**
+
+*** [ ] Pastikan validasi option availability berjalan di backend.**
+
+*** [ ] Pastikan validasi min/max selection berjalan di backend.**
+
+*** [ ] Pastikan subtotal dihitung ulang dari database, bukan dari frontend.**
+
+*** [ ] Pastikan halaman cart menampilkan seluruh item.**
+
+*** [ ] Pastikan nama product dan options tampil dengan benar.**
+
+*** [ ] Pastikan subtotal setiap item tampil dalam format Rupiah.**
+
+*** [ ] Pastikan cart total tampil dalam format Rupiah.**
+
+*** [ ] Pastikan quantity dapat di-increment dan di-decrement.**
+
+*** [ ] Pastikan quantity tidak dapat di-decrement di bawah `1`.**
+
+*** [ ] Pastikan item dapat dihapus dari cart.**
+
+*** [ ] Pastikan cart dapat dikosongkan.**
+
+*** [ ] Pastikan cart counter pada header menampilkan jumlah item yang benar.**
+
+*** [ ] Pastikan empty state cart tampil ketika cart kosong.**
+
+*** [ ] Pastikan cart berjalan tanpa login.**
+
+*** [ ] Pastikan halaman cart responsive pada mobile, tablet, dan desktop.**
+
+*** [ ] Pastikan UI tetap sederhana dan tidak menghabiskan waktu pada visual polish.**
+
+---
+
+### Prinsip UI untuk Phase berikutnya
+
+> **Feature First, UI Later**
+
+**Seluruh halaman pada phase ini cukup menggunakan UI sederhana dengan kombinasi putih dan biru.**
+
+**Fokus utama adalah memastikan session cart, add to cart dengan validasi server-side, update quantity, remove item, clear cart, perhitungan total, dan cart counter bekerja dengan benar.**
+
+**Jangan mengejar desain final, animasi, micro-interaction, atau visual polish pada phase ini.**
+
+**Setelah seluruh fitur aplikasi selesai, akan dibuat phase khusus untuk `UI Polish / Design Refinement / Refactoring` yang menangani peningkatan visual seluruh aplikasi secara menyeluruh.**
 
 ---
 
