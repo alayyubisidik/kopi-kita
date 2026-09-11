@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class Option extends Model
 {
+    use LogsActivity;
     /**
      * The attributes that are mass assignable.
      *
@@ -36,5 +39,21 @@ class Option extends Model
     public function optionGroup()
     {
         return $this->belongsTo(OptionGroup::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['option_group_id', 'name', 'additional_price', 'is_available', 'sort_order'])
+            ->logOnlyDirty()
+            ->useLogName('option')
+            ->setDescriptionForEvent(fn(string $eventName) => match($eventName) {
+                'created' => "Created option: {$this->name}",
+                'updated' => $this->wasChanged('is_available') 
+                    ? "Changed option {$this->name} availability to " . ($this->is_available ? 'available' : 'unavailable')
+                    : "Updated option: {$this->name}",
+                'deleted' => "Deleted option: {$this->name}",
+                default => "{$eventName} option: {$this->name}",
+            });
     }
 }

@@ -29,14 +29,15 @@ class CartService
             $cart[$cartItemKey]['subtotal'] = ((float) $cart[$cartItemKey]['product_price'] + collect($cart[$cartItemKey]['options'])->sum('additional_price')) * $cart[$cartItemKey]['quantity'];
         } else {
             $cart[$cartItemKey] = [
-                'cart_item_key' => $cartItemKey,
-                'product_id' => $product->id,
-                'product_name' => $product->name,
-                'product_price' => (float) $product->price,
-                'options' => $selectedOptions,
-                'quantity' => $quantity,
-                'note' => $note,
-                'subtotal' => $subtotal,
+                'cart_item_key'  => $cartItemKey,
+                'product_id'     => $product->id,
+                'product_name'   => $product->name,
+                'product_price'  => (float) $product->price,
+                'product_image'  => $product->image_url,
+                'options'        => $selectedOptions,
+                'quantity'       => $quantity,
+                'note'           => $note,
+                'subtotal'       => $subtotal,
             ];
         }
 

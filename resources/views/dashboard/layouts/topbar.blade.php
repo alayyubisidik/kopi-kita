@@ -1,30 +1,32 @@
-<!-- Topbar -->
-<header class="bg-white shadow-sm">
-    <div class="flex items-center justify-between px-4 py-3 sm:px-6">
-        <!-- Mobile menu button -->
-        <button @click="sidebarOpen = true" class="md:hidden p-2">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+{{-- Topbar --}}
+<header class="sticky top-0 z-40"
+        style="background-color: rgba(255,248,245,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 1px 8px rgba(124,92,62,0.07);">
+    <div class="h-16 w-full px-4 sm:px-6 flex items-center justify-between">
+
+        {{-- Mobile menu button --}}
+        <button @click="sidebarOpen = true" class="md:hidden p-2 rounded-lg transition-colors"
+                style="color: #624528;"
+                onmouseover="this.style.backgroundColor='#ffeadc'" onmouseout="this.style.backgroundColor='transparent'">
+            <span class="material-symbols-outlined" style="font-size:24px;">menu</span>
         </button>
 
-        <!-- Title -->
-        <div>
-            <h2 class="text-xl font-semibold text-gray-800">@yield('title', 'Dashboard')</h2>
-            @hasSection('breadcrumb')
-                <p class="text-sm text-gray-600">@yield('breadcrumb')</p>
-            @endif
+        {{-- Page Title (mobile) --}}
+        <div class="md:hidden flex-1 px-3">
+            <h2 class="text-base font-semibold truncate" style="color: #221a13;">@yield('title', 'Dashboard')</h2>
         </div>
 
-        <!-- Logout -->
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-red-600">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Logout
-            </button>
-        </form>
+        {{-- Spacer desktop --}}
+        <div class="hidden md:flex flex-1"></div>
+
+        {{-- User info --}}
+        <div class="flex items-center gap-4">
+            <div class="hidden sm:flex flex-col text-right">
+                <p class="text-sm font-semibold leading-tight" style="color: #221a13;">{{ auth()->user()->name }}</p>
+            </div>
+            <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
+                 style="background-color: #624528;">
+                {{ substr(auth()->user()->name, 0, 1) }}
+            </div>
+        </div>
     </div>
 </header>

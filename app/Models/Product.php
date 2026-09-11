@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Product extends Model implements HasMedia
 {
-    use InteractsWithMedia;
+    use InteractsWithMedia, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -74,5 +76,21 @@ class Product extends Model implements HasMedia
         }
 
         return asset('images/placeholder-product.jpg');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['category_id', 'name', 'slug', 'description', 'price', 'is_available', 'is_customizable'])
+            ->logOnlyDirty()
+            ->useLogName('product')
+            ->setDescriptionForEvent(fn(string $eventName) => match($eventName) {
+                'created' => "Created product: {$this->name}",
+                'updated' => $this->wasChanged('is_available') 
+                    ? "Changed product {$this->name} availability to " . ($this->is_available ? 'available' : 'unavailable')
+                    : "Updated product: {$this->name}",
+                'deleted' => "Deleted product: {$this->name}",
+                default => "{$eventName} product: {$this->name}",
+            });
     }
 }

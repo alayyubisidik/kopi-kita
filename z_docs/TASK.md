@@ -1,48 +1,4 @@
 
-
-# Phase 18 — Offline Order
-
-## 18.1 Create Offline Order
-
-Admin dapat membuat order manual.
-
-Input:
-
-* [ ] Customer name.
-* [ ] Product.
-* [ ] Quantity.
-* [ ] Customization.
-* [ ] Note.
-* [ ] Payment method.
-
-Payment method:
-
-```text
-Cash
-QRIS
-```
-
-## 18.2 Offline Order Validation
-
-* [ ] Product harus tersedia.
-* [ ] Option harus tersedia.
-* [ ] Customization harus valid.
-* [ ] Total dihitung server-side.
-
-## 18.3 Offline Order Payment
-
-Offline order tidak menggunakan Midtrans.
-
-```text
-Cash / QRIS
-↓
-Admin confirms
-↓
-Order recorded
-```
-
----
-
 # Phase 19 — Sales Dashboard
 
 ## 19.1 Dashboard Cards
@@ -129,4 +85,16 @@ Catat aktivitas penting Admin:
 * [ ] Filter date.
 
 ---
+
+# Phase 22 — Dashboard Index
+
+## 22.1 Dashboard Summary
+* [ ] Summary Cards (Total pesanan, total pendapatan, online/offline, produk aktif)
+* [ ] Charts (Tren pendapatan, metode pembayaran)
+* [ ] Products & Catalog Summary (Kategori aktif, produk tidak tersedia)
+* [ ] Recent Activity (Pesanan terbaru, log aktivitas terbaru)
+* [ ] Quick Links
+
+---
+
 

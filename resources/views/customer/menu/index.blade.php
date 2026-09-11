@@ -1,104 +1,144 @@
-@extends('layouts.customer')
+@extends('customer.layouts.customer')
+
+@section('title', 'Menu Katalog — Kopi Kita')
+@section('meta_description', 'Temukan kopi favoritmu di Kopi Kita. Pilihan menu signature, kopi, non-kopi, dan makanan ringan.')
+@section('page-title', 'Menu Katalog')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-6">Menu Kopi Kita</h1>
-        
-        <!-- Search and Filter -->
-        <div class="flex flex-col md:flex-row gap-4 mb-6">
-            <!-- Search Form -->
-            <form action="{{ route('customer.menu') }}" method="GET" class="w-full md:w-1/3 relative">
-                @if($categoryId)
-                    <input type="hidden" name="category" value="{{ $categoryId }}">
-                @endif
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i data-lucide="search" class="h-5 w-5 text-gray-400"></i>
-                    </div>
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari menu..." 
-                           class="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                </div>
-            </form>
+<div class="flex flex-col w-full pb-6">
 
-            <!-- Category Filter -->
-            <div class="w-full md:w-2/3 overflow-x-auto pb-2 -mb-2">
-                <div class="flex space-x-2">
-                    <a href="{{ route('customer.menu', ['search' => $search]) }}" 
-                       class="px-4 py-2 rounded-full whitespace-nowrap {{ !$categoryId ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200' }}">
-                        All
-                    </a>
-                    @foreach($categories as $category)
-                        <a href="{{ route('customer.menu', ['category' => $category->id, 'search' => $search]) }}" 
-                           class="px-4 py-2 rounded-full whitespace-nowrap {{ $categoryId == $category->id ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200' }}">
-                            {{ $category->name }}
-                        </a>
-                    @endforeach
-                </div>
-            </div>
+    {{-- Search Bar --}}
+    <div class="w-full mb-space-md">
+        <form action="{{ route('customer.menu') }}" method="GET" class="relative flex items-center">
+            @if($categoryId)
+                <input type="hidden" name="category" value="{{ $categoryId }}">
+            @endif
+            <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">search</span>
+            <input
+                id="menu-search-input"
+                type="text"
+                name="search"
+                value="{{ $search }}"
+                placeholder="Cari menu favorit kamu..."
+                class="w-full h-11 pl-11 pr-10 bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-md text-body-md rounded-lg shadow-sm focus:outline-none focus:bg-surface-bright transition-all"
+                style="box-shadow: 0 1px 4px rgba(124, 92, 62, 0.08);"
+                autocomplete="off">
+            @if($search)
+                <a href="{{ route('customer.menu', ['category' => $categoryId]) }}"
+                   class="absolute right-3 w-6 h-6 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center hover:opacity-80">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                </a>
+            @endif
+        </form>
+    </div>
+
+    {{-- Category Pills --}}
+    <div class="w-full mb-space-md -mx-space-md px-space-md overflow-x-auto no-scrollbar">
+        <div class="flex items-center gap-2 min-w-max pb-1">
+            <a href="{{ route('customer.menu', ['search' => $search]) }}"
+               class="px-4 py-1.5 rounded-full font-label-md text-label-md transition-all duration-200 shadow-sm
+                      {{ !$categoryId ? 'bg-primary text-on-primary' : 'bg-surface-container-lowest text-primary hover:bg-surface-container' }}">
+                Semua
+            </a>
+            @foreach($categories as $category)
+                <a href="{{ route('customer.menu', ['category' => $category->id, 'search' => $search]) }}"
+                   class="px-4 py-1.5 rounded-full font-label-md text-label-md transition-all duration-200 shadow-sm
+                          {{ $categoryId == $category->id ? 'bg-primary text-on-primary' : 'bg-surface-container-lowest text-primary hover:bg-surface-container' }}">
+                    {{ $category->name }}
+                </a>
+            @endforeach
         </div>
     </div>
 
-    <!-- Product Grid -->
+    {{-- Section Header --}}
+    <div class="flex items-center justify-between mb-space-sm">
+        <div class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-secondary text-[18px]">coffee</span>
+            <h2 class="font-headline-sm text-headline-sm text-on-surface tracking-tight">
+                @if($search || $categoryId)
+                    Hasil Pencarian
+                @else
+                    Pilihan Terpopuler
+                @endif
+            </h2>
+        </div>
+        <span class="font-label-sm text-label-sm text-outline">
+            {{ $productsCount }} Menu Tersedia
+        </span>
+    </div>
+
+    {{-- Product Grid --}}
     @if($products->isEmpty())
-        <div class="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-100">
-            <i data-lucide="search-x" class="h-12 w-12 text-gray-400 mx-auto mb-4"></i>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">Produk tidak ditemukan</h3>
-            <p class="text-gray-500 mb-4">Coba gunakan kata pencarian atau kategori lain.</p>
+        {{-- Empty State --}}
+        <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
+            <div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-outline mb-3">
+                <span class="material-symbols-outlined text-[32px]">emoji_food_beverage</span>
+            </div>
+            <h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Menu Tidak Ditemukan</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant max-w-xs mb-4">
+                Coba cari dengan kata kunci lain seperti "kopi", "matcha", atau "croissant".
+            </p>
             @if($search || $categoryId)
-                <a href="{{ route('customer.menu') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                    Reset Filter
+                <a href="{{ route('customer.menu') }}"
+                   class="h-9 px-4 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md hover:bg-surface-container-highest transition-colors">
+                    Tampilkan Semua Menu
                 </a>
             @endif
         </div>
     @else
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <div class="grid grid-cols-2 gap-space-sm w-full">
             @foreach($products as $product)
-                <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden flex flex-col {{ !$product->is_available ? 'opacity-75' : '' }}">
-                    <!-- Product Image -->
-                    <div class="aspect-square bg-gray-100 relative">
-                        @if($product->hasMedia('product-images'))
-                            <img src="{{ $product->getFirstMediaUrl('product-images') }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
-                        @else
-                            <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                <i data-lucide="coffee" class="h-12 w-12 opacity-50"></i>
-                            </div>
-                        @endif
-                        
-                        @if(!$product->is_available)
-                            <div class="absolute inset-0 bg-white/50 backdrop-blur-[2px] flex items-center justify-center">
-                                <span class="bg-gray-900 text-white px-3 py-1 rounded-full text-sm font-medium">Habis</span>
-                            </div>
-                        @endif
-                    </div>
+                <div class="product-card flex flex-col justify-between bg-surface-container-lowest rounded-xl p-2.5 shadow-sm transition-transform duration-200 hover:-translate-y-0.5"
+                     data-category="{{ $product->category?->slug }}"
+                     data-title="{{ strtolower($product->name) }}"
+                     style="box-shadow: 0 4px 14px -2px rgba(124, 92, 62, 0.08);">
 
-                    <!-- Product Info -->
-                    <div class="p-4 flex flex-col flex-grow">
-                        @if($product->category)
-                            <span class="text-xs text-blue-600 font-medium mb-1">{{ $product->category->name }}</span>
-                        @endif
-                        <h3 class="text-gray-900 font-medium line-clamp-2 mb-2 flex-grow">{{ $product->name }}</h3>
-                        
-                        <div class="mt-auto">
-                            <div class="flex items-center justify-between">
-                                <span class="font-bold text-gray-900">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                            </div>
-                            
-                            @if($product->is_available)
-                                <a href="{{ route('customer.menu.show', $product->slug) }}" class="w-full mt-3 flex items-center justify-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-md transition-colors font-medium text-sm">
-                                    <i data-lucide="plus" class="h-4 w-4"></i>
-                                    Tambah
-                                </a>
+                    <div>
+                        {{-- Product Image --}}
+                        <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-surface-container mb-2.5">
+                            @if($product->hasMedia('product-images'))
+                                <img src="{{ $product->getFirstMediaUrl('product-images') }}"
+                                     alt="{{ $product->name }}"
+                                     class="w-full h-full object-cover">
                             @else
-                                <button disabled class="w-full mt-3 flex items-center justify-center gap-2 bg-gray-100 text-gray-400 px-4 py-2 rounded-md font-medium text-sm cursor-not-allowed">
-                                    Tidak Tersedia
-                                </button>
+                                <div class="w-full h-full flex items-center justify-center text-outline">
+                                    <span class="material-symbols-outlined text-[48px] opacity-40">coffee</span>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Product Meta --}}
+                        <div class="flex flex-col px-0.5 mb-2">
+                            <h3 class="font-label-lg text-label-lg text-on-surface line-clamp-1 leading-snug">
+                                {{ $product->name }}
+                            </h3>
+                            @if($product->category)
+                                <span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">
+                                    {{ $product->category->name }}
+                                </span>
                             @endif
                         </div>
                     </div>
+
+                    {{-- Price + CTA --}}
+                    <div class="flex flex-col gap-2 pt-1 px-0.5 w-full">
+                        <span class="font-bold text-primary font-headline-sm text-body-lg">
+                            Rp {{ number_format($product->price, 0, ',', '.') }}
+                        </span>
+                        <a href="{{ route('customer.menu.show', $product->slug) }}"
+                           class="add-to-cart-btn w-full h-9 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center gap-1 active:scale-95 transition-all shadow-sm hover:opacity-90"
+                           data-name="{{ $product->name }}"
+                           data-price="{{ $product->price }}">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            <span>Tambah</span>
+                        </a>
+                    </div>
+
                 </div>
             @endforeach
         </div>
     @endif
+
 </div>
+
 @endsection
